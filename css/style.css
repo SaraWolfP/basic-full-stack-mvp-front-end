@@ -1,0 +1,433 @@
+/* ═══════════════════════════════════════════════════════════════
+   SIMULADOR DE FINANCIAMENTO IMOBILIÁRIO — Estilos Customizados
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Variáveis de tema ──────────────────────────────────────── */
+:root {
+  --navy:      #0d1b2a;
+  --navy-mid:  #1b2e45;
+  --navy-soft: #243b55;
+  --teal:      #00b4d8;
+  --teal-dark: #0096b7;
+  --green:     #2dc653;
+  --green-dark:#25a847;
+  --amber:     #f9a825;
+  --red:       #e63946;
+  --bg:        #f0f4f8;
+  --card-bg:   #ffffff;
+  --text-main: #1a1a2e;
+  --text-muted:#6b7a90;
+  --border:    #d6e0ee;
+  --shadow-sm: 0 2px 8px rgba(13,27,42,0.08);
+  --shadow-md: 0 6px 24px rgba(13,27,42,0.13);
+  --radius:    12px;
+  --radius-sm: 8px;
+}
+
+/* ── Reset / Base ───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  background-color: var(--bg);
+  color: var(--text-main);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.app-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+  color: #fff;
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-icon {
+  font-size: 2rem;
+  color: var(--teal);
+  flex-shrink: 0;
+}
+
+.app-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+
+.app-subtitle {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.6);
+}
+
+/* ── Cards genéricos ─────────────────────────────────────────── */
+.card-section {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  background: var(--card-bg);
+  overflow: hidden;
+}
+
+.section-header {
+  background: linear-gradient(90deg, var(--navy-mid) 0%, var(--navy-soft) 100%);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.75rem 1rem;
+  border-bottom: none;
+}
+
+/* ── Formulários ─────────────────────────────────────────────── */
+.form-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.3rem;
+}
+
+.form-control,
+.form-select {
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(0,180,216,0.15);
+  outline: none;
+}
+
+/* ── Botões ──────────────────────────────────────────────────── */
+.btn-primary {
+  background: linear-gradient(135deg, var(--teal-dark), var(--teal));
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,180,216,0.35);
+  background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+}
+
+.btn-success {
+  background: linear-gradient(135deg, var(--green-dark), var(--green));
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+}
+
+.btn-success:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(45,198,83,0.35);
+  background: linear-gradient(135deg, var(--green), var(--green-dark));
+}
+
+.btn-danger-sm {
+  background: transparent;
+  border: 1px solid var(--red);
+  color: var(--red);
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+}
+
+.btn-danger-sm:hover {
+  background: var(--red);
+  color: #fff;
+  transform: scale(1.05);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Badge de contagem ───────────────────────────────────────── */
+.badge-count {
+  background: var(--teal);
+  color: #fff;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25em 0.65em;
+}
+
+/* ── Tabela de financiamentos ────────────────────────────────── */
+.table-financiamentos,
+.table-amortizacoes {
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.table-financiamentos thead th,
+.table-amortizacoes thead th {
+  background: #f5f8fc;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--border);
+  padding: 0.6rem 0.9rem;
+  white-space: nowrap;
+}
+
+.table-financiamentos tbody tr,
+.table-amortizacoes tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.table-financiamentos tbody tr:last-child,
+.table-amortizacoes tbody tr:last-child {
+  border-bottom: none;
+}
+
+.table-financiamentos tbody td,
+.table-amortizacoes tbody td {
+  padding: 0.65rem 0.9rem;
+  vertical-align: middle;
+}
+
+/* Linha clicável de financiamentos */
+.table-financiamentos tbody tr.financiamento-row {
+  cursor: pointer;
+}
+
+.table-financiamentos tbody tr.financiamento-row:hover {
+  background: #eaf6ff;
+}
+
+.table-financiamentos tbody tr.financiamento-row.selecionado {
+  background: linear-gradient(90deg, #ddf4ff 0%, #edf9ff 100%);
+  border-left: 3px solid var(--teal);
+}
+
+/* ── Estado vazio ────────────────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  color: var(--text-muted);
+  gap: 0.5rem;
+}
+
+.empty-state i {
+  font-size: 2.2rem;
+  opacity: 0.4;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.empty-state-sm {
+  padding: 1.5rem 1rem;
+}
+
+.empty-state-sm i {
+  font-size: 1.5rem;
+}
+
+/* ── Painel vazio (sem seleção) ──────────────────────────────── */
+.painel-vazio-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  background: rgba(255,255,255,0.6);
+}
+
+.painel-vazio-content {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 2rem;
+}
+
+.painel-vazio-icon {
+  font-size: 3.5rem;
+  color: var(--teal);
+  opacity: 0.4;
+  display: block;
+  margin-bottom: 1rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+.painel-vazio-content h4 {
+  font-weight: 700;
+  color: var(--navy-soft);
+  margin-bottom: 0.5rem;
+}
+
+.painel-vazio-content p {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ── Painel ativo — fade in ──────────────────────────────────── */
+.painel-ativo {
+  animation: fadeInUp 0.35s ease both;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Cabeçalho do painel ─────────────────────────────────────── */
+.painel-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  color: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+.painel-header-icon {
+  width: 52px;
+  height: 52px;
+  background: rgba(0,180,216,0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--teal);
+  flex-shrink: 0;
+}
+
+.painel-titulo {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.modelo-badge {
+  background: var(--teal);
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 0.25em 0.75em;
+  border-radius: 20px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+/* ── Cards de resumo ─────────────────────────────────────────── */
+.resumo-card {
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.resumo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.resumo-card-total {
+  background: linear-gradient(135deg, #fff7e0, #fff);
+  border-left: 4px solid var(--amber);
+}
+
+.resumo-card-parcelas {
+  background: linear-gradient(135deg, #e8fff0, #fff);
+  border-left: 4px solid var(--green);
+}
+
+.resumo-card-geral {
+  background: linear-gradient(135deg, #e8f0ff, #fff);
+  border-left: 4px solid #4c7ef3;
+}
+
+.resumo-card-pago {
+  background: linear-gradient(135deg, #f0e8ff, #fff);
+  border-left: 4px solid #8b5cf6;
+}
+
+.resumo-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 0.3rem;
+}
+
+.resumo-valor {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+  line-height: 1.2;
+  transition: color 0.3s;
+}
+
+.resumo-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0.25rem 0 0;
+}
+
+/* ── Gráfico ─────────────────────────────────────────────────── */
+.grafico-container {
+  position: relative;
+  height: 280px;
+  width: 100%;
+}
+
+/* ── Toast ───────────────────────────────────────────────────── */
+.toast {
+  min-width: 260px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.toast.bg-success { background: var(--green) !important; }
+.toast.bg-danger  { background: var(--red) !important; }
+
+/* ── Scrollbar personalizada ─────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ── Responsividade ──────────────────────────────────────────── */
+@media (max-width: 992px) {
+  .grafico-container { height: 240px; }
+  .resumo-valor { font-size: 1.35rem; }
+}
+
+@media (max-width: 576px) {
+  .app-title  { font-size: 1.1rem; }
+  .app-subtitle { display: none; }
+  .grafico-container { height: 200px; }
+}
