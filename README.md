@@ -34,13 +34,34 @@ basic-full-stack-mvp-front-end/
 1. **Back-end em execução** — o servidor Flask deve estar rodando em `http://127.0.0.1:5000`.  
    Consulte as instruções de instalação do repositório `basic-full-stack-mvp-back-end`.
 
+## Instalação
+
+### 1. Clone o repositório
+
+Abra um terminal e navegue até a pasta onde deseja salvar o projeto (por exemplo, `Documentos`):
+
+```bash
+cd Documentos
+```
+
+Em seguida, execute:
+
+```bash
+git clone https://github.com/<seu-usuario>/basic-full-stack-mvp-front-end.git
+```
+
+### 2. Acesse a pasta do projeto
+
+```bash
+cd basic-full-stack-mvp-front-end
+```
+
+Não é necessário instalar dependências — todas as bibliotecas são carregadas via CDN.
+
 ## Execução
 
-Não é necessário nenhum servidor, instalação ou extensão de navegador.
-
-1. Clone ou baixe este repositório.
-2. Certifique-se de que o back-end está rodando (veja acima).
-3. Abra o arquivo `index.html` diretamente no Chrome (ou qualquer navegador moderno).
+1. Certifique-se de que o back-end está rodando em `http://127.0.0.1:5000` (veja os pré-requisitos acima).
+2. Abra o arquivo `index.html` diretamente no Chrome (ou qualquer navegador moderno).
 
 ```
 Abrir com Chrome: Arquivo > Abrir arquivo... > index.html
