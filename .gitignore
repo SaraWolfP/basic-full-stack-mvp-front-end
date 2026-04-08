@@ -12,6 +12,7 @@
 *.tmp
 mvp-rules.txt
 READMEBACKEND.md
+roteiro-video.txt
 venv/
 __pycache__/
 *.py[cod]

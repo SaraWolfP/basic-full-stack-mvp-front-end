@@ -29,11 +29,13 @@ function calcularResumo(parcelas, amortizacoes = []) {
   const passadas = parcelas.filter(p => p.data_parcela < anoMesAtual);
 
   // Amortizações cujas datas já passaram (já foram pagas)
-  const amortizacoesPagas = amortizacoes.filter(a => a.data_amortizacao < anoMesAtual);
-  const totalAmortizacoesPagas = amortizacoesPagas.reduce((soma, a) => soma + a.valor_amortizado, 0);
-  const totalAmortizacoesGeral = amortizacoes.reduce((soma, a) => soma + a.valor_amortizado, 0);
+  const amortizacoesPagas  = amortizacoes.filter(a => a.data_amortizacao < anoMesAtual);
+  const amortizacoesFuturas = amortizacoes.filter(a => a.data_amortizacao >= anoMesAtual);
+  const totalAmortizacoesPagas  = amortizacoesPagas.reduce((soma, a) => soma + a.valor_amortizado, 0);
+  const totalAmortizacoesFuturas = amortizacoesFuturas.reduce((soma, a) => soma + a.valor_amortizado, 0);
+  const totalAmortizacoesGeral  = amortizacoes.reduce((soma, a) => soma + a.valor_amortizado, 0);
 
-  const totalAPagar = futuras.reduce((soma, p) => soma + p.valor_parcela, 0);
+  const totalAPagar = futuras.reduce((soma, p) => soma + p.valor_parcela, 0) + totalAmortizacoesFuturas;
   const totalGeral  = parcelas.reduce((soma, p) => soma + p.valor_parcela, 0) + totalAmortizacoesGeral;
   const totalPago   = passadas.reduce((soma, p) => soma + p.valor_parcela, 0) + totalAmortizacoesPagas;
 

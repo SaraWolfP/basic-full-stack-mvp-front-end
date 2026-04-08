@@ -403,6 +403,38 @@ body {
   width: 100%;
 }
 
+/* ── Filtros por ano ─────────────────────────────────────────── */
+.filtros-ano-wrapper {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: #f8fafd;
+}
+
+.filtros-ano {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.filtro-ano-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.filtro-ano-select {
+  max-width: 160px;
+  font-size: 0.85rem;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  color: var(--text-main);
+  cursor: pointer;
+}
+
 /* ── Toast ───────────────────────────────────────────────────── */
 .toast {
   min-width: 260px;

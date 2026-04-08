@@ -1,6 +1,6 @@
 /**
  * grafico.js
- * Responsável pela renderização e atualização do gráfico de parcelas
+ * Responsável pela renderização, atualização e filtragem do gráfico de parcelas
  * usando Chart.js v4. Mantém uma única instância do chart para que
  * as atualizações sejam animadas (sem recriar o canvas a cada mudança).
  */
@@ -9,11 +9,23 @@
 let instanciaGrafico = null;
 
 /**
- * Referência mutável ao array ordenado de parcelas.
- * Mantida fora do closure para que o tooltip sempre use os dados atuais.
+ * Lista completa de parcelas ordenadas por data.
+ * Usada para gerar os filtros de ano e como fonte de verdade.
+ * @type {Array}
+ */
+let parcelasTodas = [];
+
+/**
+ * Subconjunto de parcelasTodas atualmente exibido no gráfico.
+ * Também usado pelo tooltip para exibir dados corretos.
  * @type {Array}
  */
 let parcelasAtuais = [];
+
+/** @type {string|null} Ano selecionado no filtro, ou null para "Todos" */
+let anoSelecionado = null;
+
+/* ── Formatadores ────────────────────────────────────────────── */
 
 /**
  * Formata um número como moeda brasileira (R$ 1.234,56).
@@ -26,13 +38,12 @@ function formatarMoeda(valor) {
 
 /**
  * Formata um valor numérico para o eixo Y do gráfico de forma legível.
- * Usa sufixo "k" apenas quando o valor é >= 1000, com uma casa decimal.
  * @param {number} valor
  * @returns {string}
  */
 function formatarEixoY(valor) {
   if (valor >= 1_000_000) return `R$ ${(valor / 1_000_000).toFixed(1)}M`;
-  if (valor >= 1_000)    return `R$ ${(valor / 1_000).toFixed(1)}k`;
+  if (valor >= 1_000)     return `R$ ${(valor / 1_000).toFixed(1)}k`;
   return `R$ ${valor.toFixed(0)}`;
 }
 
@@ -48,8 +59,7 @@ function formatarMesAno(anoMes) {
 }
 
 /**
- * Determina a cor de cada barra com base em se a parcela está no passado,
- * presente ou futuro em relação ao mês atual.
+ * Determina a cor de cada barra com base em passado, presente ou futuro.
  * @param {string} dataParcela - "YYYY-MM"
  * @returns {{ bg: string, border: string }}
  */
@@ -57,43 +67,144 @@ function corDaParcela(dataParcela) {
   const hoje = new Date();
   const anoMesAtual = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
 
-  if (dataParcela < anoMesAtual) {
-    return { bg: 'rgba(107,122,144,0.45)', border: 'rgba(107,122,144,0.7)' };
-  }
-  if (dataParcela === anoMesAtual) {
-    return { bg: 'rgba(249,168,37,0.8)', border: 'rgba(249,168,37,1)' };
-  }
+  if (dataParcela < anoMesAtual)  return { bg: 'rgba(107,122,144,0.45)', border: 'rgba(107,122,144,0.7)' };
+  if (dataParcela === anoMesAtual) return { bg: 'rgba(249,168,37,0.8)',   border: 'rgba(249,168,37,1)' };
   return { bg: 'rgba(0,180,216,0.65)', border: 'rgba(0,150,183,1)' };
+}
+
+/* ── Filtros por ano ─────────────────────────────────────────── */
+
+/**
+ * Renderiza o filtro de ano como um <select> acima do gráfico.
+ * Extrai os anos únicos de parcelasTodas e cria uma opção por ano + "Todos".
+ */
+function renderizarFiltrosAno() {
+  const container = document.getElementById('filtros-ano');
+  const wrapper   = document.getElementById('filtros-ano-wrapper');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  const anos = [...new Set(parcelasTodas.map(p => p.data_parcela.slice(0, 4)))].sort();
+
+  // Oculta o filtro se houver apenas um ano
+  if (anos.length <= 1) {
+    wrapper.style.display = 'none';
+    return;
+  }
+  wrapper.style.display = '';
+
+  const label = document.createElement('label');
+  label.htmlFor   = 'select-filtro-ano';
+  label.textContent = 'Filtrar por ano:';
+  label.className = 'filtro-ano-label';
+
+  const select = document.createElement('select');
+  select.id        = 'select-filtro-ano';
+  select.className = 'form-select form-select-sm filtro-ano-select';
+
+  // Opção "Todos"
+  const optTodos = document.createElement('option');
+  optTodos.value       = '';
+  optTodos.textContent = 'Todos os anos';
+  select.appendChild(optTodos);
+
+  anos.forEach(ano => {
+    const opt = document.createElement('option');
+    opt.value       = ano;
+    opt.textContent = ano;
+    if (ano === anoSelecionado) opt.selected = true;
+    select.appendChild(opt);
+  });
+
+  select.addEventListener('change', () => {
+    anoSelecionado = select.value || null;
+    aplicarFiltroAno();
+  });
+
+  container.appendChild(label);
+  container.appendChild(select);
+}
+
+/**
+ * Aplica o filtro de ano selecionado e atualiza o gráfico.
+ */
+function aplicarFiltroAno() {
+  const lista = anoSelecionado
+    ? parcelasTodas.filter(p => p.data_parcela.startsWith(anoSelecionado))
+    : parcelasTodas;
+
+  atualizarDadosGrafico(lista);
+}
+
+/* ── Renderização do gráfico ─────────────────────────────────── */
+
+/**
+ * Atualiza parcelasAtuais e os dados do chart com um subconjunto de parcelas.
+ * @param {Array} lista - Parcelas a exibir (já deve estar ordenada)
+ */
+function atualizarDadosGrafico(lista) {
+  parcelasAtuais = lista;
+
+  const labels       = lista.map(p => formatarMesAno(p.data_parcela));
+  const valores      = lista.map(p => p.valor_parcela);
+  const cores        = lista.map(p => corDaParcela(p.data_parcela));
+  const bgColors     = cores.map(c => c.bg);
+  const borderColors = cores.map(c => c.border);
+
+  const infoEl = document.getElementById('grafico-info-parcelas');
+  if (infoEl) {
+    const total = parcelasTodas.length;
+    const exibindo = lista.length;
+    infoEl.textContent = anoSelecionado
+      ? `${exibindo} parcela${exibindo !== 1 ? 's' : ''} de ${total}`
+      : `${total} parcela${total !== 1 ? 's' : ''}`;
+  }
+
+  if (!instanciaGrafico) return;
+
+  instanciaGrafico.data.labels = labels;
+  instanciaGrafico.data.datasets[0].data = valores;
+  instanciaGrafico.data.datasets[0].backgroundColor = bgColors;
+  instanciaGrafico.data.datasets[0].borderColor = borderColors;
+  instanciaGrafico.update('active');
 }
 
 /**
  * Renderiza (ou atualiza) o gráfico de barras com o cronograma de parcelas.
  * Na primeira chamada cria o chart; nas seguintes, atualiza os dados e anima.
+ * Também (re)gera os botões de filtro por ano.
  * @param {Array<{numero_parcela: number, data_parcela: string, valor_parcela: number}>} parcelas
  */
 function renderizarGrafico(parcelas) {
   const canvas = document.getElementById('grafico-parcelas');
-  const infoEl = document.getElementById('grafico-info-parcelas');
-
   if (!canvas) return;
 
-  // Ordena por data para garantir exibição cronológica e atualiza referência global
-  parcelasAtuais = [...parcelas].sort((a, b) =>
+  // Atualiza lista completa ordenada
+  parcelasTodas = [...parcelas].sort((a, b) =>
     a.data_parcela.localeCompare(b.data_parcela)
   );
 
-  const labels      = parcelasAtuais.map(p => formatarMesAno(p.data_parcela));
-  const valores     = parcelasAtuais.map(p => p.valor_parcela);
-  const cores       = parcelasAtuais.map(p => corDaParcela(p.data_parcela));
-  const bgColors    = cores.map(c => c.bg);
+  // Reseta filtro ao recarregar parcelas (ex: após amortização)
+  anoSelecionado = null;
+
+  renderizarFiltrosAno();
+
+  // Define os dados visíveis (todos, pois filtro foi resetado)
+  parcelasAtuais = parcelasTodas;
+
+  const labels       = parcelasAtuais.map(p => formatarMesAno(p.data_parcela));
+  const valores      = parcelasAtuais.map(p => p.valor_parcela);
+  const cores        = parcelasAtuais.map(p => corDaParcela(p.data_parcela));
+  const bgColors     = cores.map(c => c.bg);
   const borderColors = cores.map(c => c.border);
 
+  const infoEl = document.getElementById('grafico-info-parcelas');
   if (infoEl) {
     infoEl.textContent = `${parcelas.length} parcela${parcelas.length !== 1 ? 's' : ''}`;
   }
 
   if (instanciaGrafico) {
-    // Atualiza dados sem recriar — preserva animação
     instanciaGrafico.data.labels = labels;
     instanciaGrafico.data.datasets[0].data = valores;
     instanciaGrafico.data.datasets[0].backgroundColor = bgColors;
@@ -102,7 +213,7 @@ function renderizarGrafico(parcelas) {
     return;
   }
 
-  // Criação inicial
+  // Criação inicial do chart
   const ctx = canvas.getContext('2d');
 
   instanciaGrafico = new Chart(ctx, {
@@ -132,12 +243,10 @@ function renderizarGrafico(parcelas) {
           padding: 10,
           cornerRadius: 8,
           callbacks: {
-            // Usa parcelasAtuais (referência mutável) para sempre refletir o estado atual
+            // Usa parcelasAtuais (referência mutável) — sempre reflete o filtro atual
             title(items) {
               const p = parcelasAtuais[items[0].dataIndex];
-              return p
-                ? `Parcela ${p.numero_parcela} — ${formatarMesAno(p.data_parcela)}`
-                : '';
+              return p ? `Parcela ${p.numero_parcela} — ${formatarMesAno(p.data_parcela)}` : '';
             },
             label(item) {
               return ` ${formatarMoeda(item.raw)}`;
@@ -162,7 +271,6 @@ function renderizarGrafico(parcelas) {
           ticks: {
             color: '#6b7a90',
             font: { size: 10 },
-            // Não limita o número de ticks para que o Chart.js escolha intervalos adequados
             callback: formatarEixoY,
           },
         },
@@ -172,14 +280,22 @@ function renderizarGrafico(parcelas) {
 }
 
 /**
- * Destrói a instância do gráfico (chamado ao desselecionar/deletar financiamento).
+ * Destrói a instância do gráfico e limpa o estado de filtro.
  */
 function destruirGrafico() {
   if (instanciaGrafico) {
     instanciaGrafico.destroy();
     instanciaGrafico = null;
   }
+  parcelasTodas  = [];
   parcelasAtuais = [];
-  const infoEl = document.getElementById('grafico-info-parcelas');
-  if (infoEl) infoEl.textContent = '';
+  anoSelecionado = null;
+
+  const infoEl    = document.getElementById('grafico-info-parcelas');
+  const filtrosEl = document.getElementById('filtros-ano');
+  const wrapperEl = document.getElementById('filtros-ano-wrapper');
+
+  if (infoEl)    infoEl.textContent   = '';
+  if (filtrosEl) filtrosEl.innerHTML  = '';
+  if (wrapperEl) wrapperEl.style.display = 'none';
 }
