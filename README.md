@@ -8,7 +8,7 @@ Ao realizar um pagamento antecipado em um financiamento, o mutuário pode optar 
 
 ## Tecnologias
 
-- HTML5, CSS3, JavaScript (ES2021+) — sem frameworks SPA
+- HTML5, CSS3, JavaScript (ES2021+)
 - [Bootstrap 5.3](https://getbootstrap.com/) — grid e componentes visuais
 - [Bootstrap Icons 1.11](https://icons.getbootstrap.com/) — ícones
 - [Chart.js 4.4](https://www.chartjs.org/) — gráfico de parcelas

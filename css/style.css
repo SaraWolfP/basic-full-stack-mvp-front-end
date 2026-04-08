@@ -382,11 +382,13 @@ body {
 }
 
 .resumo-valor {
-  font-size: 1.6rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: var(--text-main);
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.3;
+  word-break: break-word;
+  overflow-wrap: anywhere;
   transition: color 0.3s;
 }
 
@@ -455,7 +457,7 @@ body {
 /* ── Responsividade ──────────────────────────────────────────── */
 @media (max-width: 992px) {
   .grafico-container { height: 240px; }
-  .resumo-valor { font-size: 1.35rem; }
+  .resumo-valor { font-size: 1rem; }
 }
 
 @media (max-width: 576px) {
